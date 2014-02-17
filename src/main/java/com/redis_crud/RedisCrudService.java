@@ -22,9 +22,7 @@ public class RedisCrudService extends Service<RedisCrudConfiguration> {
     @Override
     public void run (RedisCrudConfiguration configuration,
                      Environment environment) {
-        final Jedis jedis = new Jedis(configuration.getRedis().getHostname(),
-                configuration.getRedis().getPort());
 
-        environment.addResource(new UserResource(jedis));
+        environment.addResource(new UserResource());
     }
 }

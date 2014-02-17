@@ -1,6 +1,7 @@
 package com.redis_crud.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redis_crud.dao.UserDao;
 import com.redis_crud.dto.UserDto;
 import redis.clients.jedis.Jedis;
 
@@ -16,11 +17,8 @@ import java.net.URI;
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
-    private final Jedis jedis;
 
-    public UserResource (Jedis jedis) {
-        this.jedis = jedis;
-    }
+    public UserResource () {}
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -28,9 +26,8 @@ public class UserResource {
     public Response createUser (String body) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            UserDto user = objectMapper.readValue(body, UserDto.class);
-            jedis.set(user.getEmail(), user.getName());
-            URI uri = URI.create(user.getEmail());
+            UserDao user = new UserDao();
+            URI uri = URI.create(user.create(objectMapper.readValue(body, UserDto.class)).getEmail());
             return Response.created(uri).entity(user).build();
         } catch (IOException e) {
             return Response.serverError().build();
@@ -42,13 +39,9 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser (@PathParam("email") String email) {
         try {
-            String name = jedis.get(email);
-            UserDto user = new UserDto();
-            if (!name.isEmpty()) {
-                user.setName(name);
-                user.setEmail(email);
-            }
-            return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
+            UserDao user = new UserDao();
+            return Response.ok(user.read(email),
+                    MediaType.APPLICATION_JSON_TYPE).build();
         } catch (NullPointerException e) {
             return Response.status(404).build();
         }
@@ -61,15 +54,9 @@ public class UserResource {
     public Response updateUser (@PathParam("email") String email, String body) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            UserDto user = objectMapper.readValue(body, UserDto.class);
-            if (user.getEmail() != null) {
-                jedis.rename(email, user.getEmail());
-                email = user.getEmail();
-            } else {
-                user.setEmail(email);
-            }
-            jedis.set(email, user.getName());
-            return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
+            UserDao user = new UserDao();
+            return Response.ok(user.update(email, objectMapper.readValue(body, UserDto.class)),
+                    MediaType.APPLICATION_JSON_TYPE).build();
         } catch (IOException e) {
             return Response.serverError().build();
         }
@@ -79,8 +66,8 @@ public class UserResource {
     @Path("/{email}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUser (@PathParam("email") String email) {
-        Long result = jedis.del(email);
-        if (result != 0) {
+        UserDao user = new UserDao();
+        if (user.delete(email)) {
             return Response.ok().build();
         } else {
             return Response.status(404).build();
