@@ -16,22 +16,6 @@ public class RedisCrudConfiguration extends Configuration {
     @JsonProperty
     private RedisConfiguration redis = new RedisConfiguration();
 
-    @NotEmpty
-    @JsonProperty
-    private String template;
-
-    @NotEmpty
-    @JsonProperty
-    private String defaultName = "Stranger";
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public String getDefaultName() {
-        return defaultName;
-    }
-
     public RedisConfiguration getRedis() {
         return redis;
     }
