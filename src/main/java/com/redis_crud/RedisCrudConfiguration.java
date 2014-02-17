@@ -1,4 +1,4 @@
-package com.helloworld;
+package com.redis_crud;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by kasper on 2/14/14.
  */
-public class HelloWorldConfiguration extends Configuration {
+public class RedisCrudConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty

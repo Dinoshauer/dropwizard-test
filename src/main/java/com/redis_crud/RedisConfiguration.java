@@ -1,4 +1,4 @@
-package com.helloworld;
+package com.redis_crud;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;

@@ -1,4 +1,4 @@
-package com.helloworld.dto;
+package com.redis_crud.dto;
 
 /**
  * Created by kasper on 2/14/14.

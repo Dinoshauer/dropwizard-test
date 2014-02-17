@@ -1,14 +1,11 @@
-package com.helloworld.resources;
+package com.redis_crud.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.helloworld.dto.UserDto;
-import org.eclipse.jetty.util.StringUtil;
+import com.redis_crud.dto.UserDto;
 import redis.clients.jedis.Jedis;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
