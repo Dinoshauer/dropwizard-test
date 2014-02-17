@@ -1,5 +1,6 @@
 package com.redis_crud;
 
+import com.redis_crud.dao.UserDao;
 import com.redis_crud.resources.UserResource;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
@@ -22,7 +23,10 @@ public class RedisCrudService extends Service<RedisCrudConfiguration> {
     @Override
     public void run (RedisCrudConfiguration configuration,
                      Environment environment) {
+        final Jedis jedis = new Jedis(configuration.getRedis().getHostname(),
+                configuration.getRedis().getPort());
+        final UserDao user = new UserDao(jedis);
 
-        environment.addResource(new UserResource());
+        environment.addResource(new UserResource(user));
     }
 }

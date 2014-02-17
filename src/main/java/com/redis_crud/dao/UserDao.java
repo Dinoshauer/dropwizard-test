@@ -1,6 +1,5 @@
 package com.redis_crud.dao;
 
-import com.redis_crud.RedisCrudConfiguration;
 import com.redis_crud.dto.UserDto;
 import redis.clients.jedis.Jedis;
 
@@ -8,9 +7,11 @@ import redis.clients.jedis.Jedis;
  * Created by kasper on 2/14/14.
  */
 public class UserDao {
-    final RedisCrudConfiguration configuration = new RedisCrudConfiguration();
-    final Jedis jedis = new Jedis(configuration.getRedis().getHostname(),
-            configuration.getRedis().getPort());
+    private final Jedis jedis;
+
+    public UserDao (Jedis jedis) {
+        this.jedis = jedis;
+    }
 
     public UserDto create (UserDto user) {
         jedis.set(user.getEmail(), user.getName());

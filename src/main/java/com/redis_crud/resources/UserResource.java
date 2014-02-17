@@ -3,7 +3,6 @@ package com.redis_crud.resources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis_crud.dao.UserDao;
 import com.redis_crud.dto.UserDto;
-import redis.clients.jedis.Jedis;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,8 +16,11 @@ import java.net.URI;
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
+    private final UserDao user;
 
-    public UserResource () {}
+    public UserResource (UserDao user) {
+        this.user = user;
+    }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -26,9 +28,9 @@ public class UserResource {
     public Response createUser (String body) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            UserDao user = new UserDao();
-            URI uri = URI.create(user.create(objectMapper.readValue(body, UserDto.class)).getEmail());
-            return Response.created(uri).entity(user).build();
+            UserDto userDto = user.create(objectMapper.readValue(body, UserDto.class));
+            URI uri = URI.create(userDto.getEmail());
+            return Response.created(uri).entity(userDto).build();
         } catch (IOException e) {
             return Response.serverError().build();
         }
@@ -39,7 +41,6 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser (@PathParam("email") String email) {
         try {
-            UserDao user = new UserDao();
             return Response.ok(user.read(email),
                     MediaType.APPLICATION_JSON_TYPE).build();
         } catch (NullPointerException e) {
@@ -54,7 +55,6 @@ public class UserResource {
     public Response updateUser (@PathParam("email") String email, String body) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            UserDao user = new UserDao();
             return Response.ok(user.update(email, objectMapper.readValue(body, UserDto.class)),
                     MediaType.APPLICATION_JSON_TYPE).build();
         } catch (IOException e) {
@@ -66,7 +66,6 @@ public class UserResource {
     @Path("/{email}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUser (@PathParam("email") String email) {
-        UserDao user = new UserDao();
         if (user.delete(email)) {
             return Response.ok().build();
         } else {
